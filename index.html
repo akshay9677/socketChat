@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/element-ui/lib/theme-chalk/index.css"
+    />
+    <title>Chat</title>
+  </head>
+  <body>
+    <div id="app">
+      <span class="noMessages" v-if="allMsg.length == 0">Send Messages to see here......</span>
+      <div class="msgArea" v-for="msg in allMsg">
+        <el-avatar class="avatar" src="https://img.icons8.com/officel/80/000000/user-male-skin-type-5.png"></el-avatar>
+        <span class="text">{{msg}}</span>
+        <el-divider></el-divider>
+      </div>
+      <div class="chat">
+        <el-form :inline="true" ref="form" :model="form" label-width="120px">
+          <input
+            id="messageValue"
+            autocomplete="off"
+            type="text"
+            name="msg"
+            v-model="msg"
+            placeholder="Type your message"
+          ></input>
+          <el-button :plain="true" @click="clickHandler" type="primary"
+            >Send</el-button
+          >
+        </el-form>
+      </div>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script>
+      var app = new Vue({
+        el: "#app",
+        data: {
+          msg: "",
+          allMsg: [],
+        },
+        methods: {
+          clickHandler(e) {
+            e.preventDefault();
+            var socket = io();
+            socket.emit("chat message", this.msg);
+            this.msg = "";
+          },
+        },
+        created: function () {
+          var socket = io();
+        },
+        mounted: function () {
+          var socket = io();
+          socket.on("chat message", (msg) => {
+            this.$message("Message Received");
+            app.allMsg.push(msg);
+          });
+        },
+      });
+    </script>
+
+    <style scoped>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font: 13px Helvetica, Arial;
+      }
+      form {
+        border-top: black;
+        padding: 1rem;
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+      }
+      form input {
+        border: 1px solid #000;
+        width: 200px;
+        padding: 1rem;
+        width: 90%;
+        margin-right: 0.5%;
+      }
+      form button {
+        width: 9%;
+        border: none;
+        padding: 10px;
+      }
+      .text {
+        font-size: 1rem;
+        position: relative;
+        bottom: 0.8rem;
+        left: 0.8rem;
+      }
+      .msgArea {
+        margin-left: 5rem;
+        margin-right: 5rem;
+      }
+      .avatar{
+        margin-top: 0.5rem;
+        margin-right: 0.2rem;
+      }
+      .noMessages{
+        color: #888;
+        font-size: 2.3rem;
+        padding: 3rem;
+      }
+    </style>
+  </body>
+</html>
