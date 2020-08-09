@@ -35,6 +35,7 @@
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="https://unpkg.com/element-ui/lib/index.js"></script>
     <script>
+      var socket = io();
       var app = new Vue({
         el: "#app",
         data: {
@@ -42,23 +43,24 @@
           allMsg: [],
         },
         methods: {
-          clickHandler(e) {
-            e.preventDefault();
-            var socket = io();
-            socket.emit("chat message", this.msg);
+          clickHandler() {
+            socket.emit("broadcast message");
+            socket.emit("chat message",this.msg);
             this.msg = "";
           },
         },
-        created: function () {
-          var socket = io();
-        },
-        mounted: function () {
-          var socket = io();
-          socket.on("chat message", (msg) => {
-            this.$message("Message Received");
-            app.allMsg.push(msg);
+        mounted: function(){
+           
+      socket.on("broadcast message", () => {
+            this.$message('You received a message!!')
           });
-        },
+          socket.on("chat message",(message)=>{
+            app.allMsg.push(message);
+          })
+          socket.on("private message",()=>{
+            this.$message("Message Sent 🎈")
+          })
+        }
       });
     </script>
 

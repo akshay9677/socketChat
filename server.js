@@ -8,8 +8,12 @@ app.get("/", (req, res) => {
 });
 
 io.on("connection", (socket) => {
+  socket.on("broadcast message", () => {
+    socket.broadcast.emit("broadcast message");
+  });
   socket.on("chat message", (msg) => {
     io.emit("chat message", msg);
+    socket.emit("private message");
   });
 });
 
